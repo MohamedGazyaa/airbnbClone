@@ -26,8 +26,6 @@ const LoginPage = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     dispatch(login({ email, password }));
-    console.log(loading);
-    console.log(status);
   };
 
   return (

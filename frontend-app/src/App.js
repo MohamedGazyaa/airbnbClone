@@ -8,6 +8,7 @@ import RegisterPage from "./Pages/RegisterPage";
 import axios from "axios";
 import AccountPage from "./Pages/AccountPage";
 import { useSelector } from "react-redux";
+import NewPlaceForm from "./Components/NewPlaceForm/NewPlaceForm";
 
 axios.defaults.baseURL = "http://127.0.0.1:4000";
 axios.defaults.withCredentials = true;
@@ -21,6 +22,8 @@ function App() {
       <Route path="/" element={<Layout />}>
         <Route path="/" element={<HomePage />} />
         <Route path="/account/:subpage?" element={user? <AccountPage />: <LoginPage />} />
+        <Route path="/account/:subpage/new" element={user? <NewPlaceForm />: <LoginPage />} />
+        <Route path="/account/:subpage/:id" element={user? <NewPlaceForm />: <LoginPage />} />
       </Route>
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
