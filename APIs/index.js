@@ -269,6 +269,11 @@ app.get("/places", async (req, res)=>{
   res.json(await Place.find());
 })
 
+app.get("/view-place/:id", async (req,res)=>{
+  const { id } = req.params;
+  res.json(await Place.findById(id));
+})
+
 // Listening to requests
 
 app.listen(4000, (port) => {
