@@ -7,6 +7,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("./models/User");
 const Place = require("./models/Place");
+const Booking = require("./models/Booking");
 const cookieParser = require("cookie-parser");
 const imageDownloader = require("image-downloader");
 const path = require("path");
@@ -142,7 +143,7 @@ app.post("/upload", photosMiddleware.array("photos", 100), (req, res) => {
 });
 
 app.post("/add-place", (req, res) => {
-  const token = req.headers.authorization?.split(" ")[1]; // Extract the token from the 'Authorization' header
+  const token = req.headers.authorization?.split(" ")[1]; 
   if (token) {
     jwt.verify(token, jwtSecret, {}, async (err, userData) => {
       if (err) {
@@ -232,7 +233,7 @@ app.put("/update-place", (req, res) => {
     checkIn,
     checkOut,
     maxGuests,
-    price
+    price,
   } = req.body;
   if (token) {
     jwt.verify(token, jwtSecret, {}, async (err, userData) => {
@@ -240,7 +241,7 @@ app.put("/update-place", (req, res) => {
         res.status(401).json({ error: "Invalid token" });
       } else {
         const placeDoc = await Place.findById(id);
-        if (userData._id === placeDoc.owner,toString()) {
+        if ((userData._id === placeDoc.owner, toString())) {
           placeDoc.set({
             title,
             address,
@@ -254,9 +255,9 @@ app.put("/update-place", (req, res) => {
             price,
           });
           await placeDoc.save();
-          res.json("Place upadted successfully")
-        }else{
-          res.json("User is not the owner of the place")
+          res.json("Place upadted successfully");
+        } else {
+          res.json("User is not the owner of the place");
         }
       }
     });
@@ -265,14 +266,61 @@ app.put("/update-place", (req, res) => {
   }
 });
 
-app.get("/places", async (req, res)=>{
+app.get("/places", async (req, res) => {
   res.json(await Place.find());
-})
+});
 
-app.get("/view-place/:id", async (req,res)=>{
+app.get("/view-place/:id", async (req, res) => {
   const { id } = req.params;
   res.json(await Place.findById(id));
-})
+});
+
+app.post("/booking", async (req, res) => {
+  const token = req.headers.authorization?.split(" ")[1];
+  console.log(typeof token);
+  if (token) {
+    jwt.verify(token, jwtSecret, {}, async (err, userData) => {
+      if (err) {
+        return res.status(401).json({ error: "Invalid token" });
+      } else {
+        const { id, checkIn, checkOut, guests, totalPrice } = req.body;
+        const { name, email } = await User.findById(userData.id);
+        try {
+          const bookingDoc = await Booking.create({
+            place: id,
+            checkIn,
+            checkOut,
+            name,
+            email,
+            numberOfGuests: guests,
+            Price: totalPrice,
+          });
+          return res.json(bookingDoc); // Use return to ensure the function exits here
+        } catch (err) {
+          console.log(err);
+          return res.status(422).json("why"); // Use return here as well
+        }
+      }
+    });
+  } else {
+    const { id, checkIn, checkOut, name, email, guests, totalPrice } = req.body;
+    try {
+      const bookingDoc = await Booking.create({
+        place: id,
+        checkIn,
+        checkOut,
+        name,
+        email,
+        numberOfGuests: guests,
+        Price: totalPrice,
+      });
+      return res.json(bookingDoc); 
+    } catch (err) {
+      console.log(err);
+      return res.status(422).json("why"); 
+    }
+  }
+});
 
 // Listening to requests
 

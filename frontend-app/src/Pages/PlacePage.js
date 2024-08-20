@@ -85,7 +85,7 @@ const PlacePage = () => {
               </div>
             </div>
           </div>
-          <BookingWidget price={place?.price} />
+          <BookingWidget price={place?.price} id={place?._id} />
         </div>
       </div>
     </div>
